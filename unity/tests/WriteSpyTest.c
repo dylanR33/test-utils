@@ -24,6 +24,7 @@ TEST( WriteSpy, Create )
 {
     TEST_ASSERT_EQUAL( 0, WriteSpy_GetLastWrite16() );
     TEST_ASSERT_EQUAL( 0, WriteSpy_GetLastWrite32() );
+    TEST_ASSERT_EQUAL( NULL, WriteSpy_GetLastWrite8Arr() );
 }
 
 
