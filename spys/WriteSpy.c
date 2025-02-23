@@ -55,7 +55,7 @@ void WriteSpy_Write8( uint8_t cmd )
     lastWrite8 = cmd;
 }
 
-void WriteSpy_Write8Arr( uint8_t* cmd , uint32_t size )
+void WriteSpy_Write8Arr( uint8_t* cmd , uint16_t size )
 {
     lastWriteArr = ( uint8_t* )calloc( size, sizeof( uint8_t ) );
     memcpy( lastWriteArr, cmd, size );
