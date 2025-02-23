@@ -57,7 +57,10 @@ void WriteSpy_Write8( uint8_t cmd )
 
 void WriteSpy_Write8Arr( uint8_t* cmd , uint16_t size )
 {
-    lastWriteArr = ( uint8_t* )calloc( size, sizeof( uint8_t ) );
-    memcpy( lastWriteArr, cmd, size );
+    if ( cmd )
+    {
+        lastWriteArr = ( uint8_t* )calloc( size, sizeof( uint8_t ) );
+        memcpy( lastWriteArr, cmd, size );
+    }
 }
 
