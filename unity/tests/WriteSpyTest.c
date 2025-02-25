@@ -11,12 +11,13 @@ TEST_GROUP( WriteSpy );
 
 TEST_SETUP( WriteSpy )
 {
-    WriteSpy_Create();
+    WriteSpy_Create( 10 );
 }
 
 
 TEST_TEAR_DOWN( WriteSpy )
 {
+    WriteSpy_Destroy();
 }
 
 
@@ -24,7 +25,7 @@ TEST( WriteSpy, Create )
 {
     TEST_ASSERT_EQUAL( 0, WriteSpy_GetLastWrite16() );
     TEST_ASSERT_EQUAL( 0, WriteSpy_GetLastWrite32() );
-    TEST_ASSERT_EQUAL( NULL, WriteSpy_GetLastWrite8Arr() );
+    TEST_ASSERT_NOT_NULL( WriteSpy_GetLastWrite8Arr() );
 }
 
 
@@ -38,6 +39,6 @@ TEST( WriteSpy, GetLastWrite )
 
     uint8_t cmd[] = { 1, 2, 3};
     WriteSpy_Write8Arr( cmd, sizeof( cmd ) );
-    TEST_ASSERT_EQUAL_UINT8_ARRAY( cmd, WriteSpy_GetLastWrite8Arr(), sizeof( cmd ) );
+    TEST_ASSERT_EQUAL_UINT8_ARRAY( cmd, WriteSpy_GetLastWrite8Arr(), WriteSpy_GetLastWrite8ArrSize() );
 } 
 

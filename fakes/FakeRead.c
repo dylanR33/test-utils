@@ -14,10 +14,15 @@ static uint32_t lastCmd32  = 0;
 static uint32_t nextRead32VoidParameter = 0;
 
 static uint8_t* nextRead8Arr = NULL;
+static size_t   nextRead8ArrMaxSize = 0;
+static size_t   nextRead8ArrSize = 0;
+
 static uint8_t* lastCmd8Arr  = NULL;
+static size_t   lastCmd8ArrMaxSize = 0;
+static size_t   lastCmd8ArrSize = 0;
 
 
-void FakeRead_Create()
+void FakeRead_Create( size_t maxNextRead8ArrSize, size_t maxLastCmd8ArrSize )
 {
     nextRead16 = 0;
     lastCmd16  = 0;
@@ -25,12 +30,34 @@ void FakeRead_Create()
     nextRead32 = 0;
     lastCmd32  = 0;
 
-    free( nextRead8Arr );
-    nextRead8Arr = NULL;
-    free( lastCmd8Arr );
-    lastCmd8Arr = NULL;
+    nextRead8ArrSize = 0;
+    nextRead8ArrMaxSize = maxNextRead8ArrSize;
+    if ( maxNextRead8ArrSize )
+    {
+        nextRead8Arr = ( uint8_t* )calloc( maxNextRead8ArrSize, sizeof( uint8_t ) );
+    }
+
+    lastCmd8ArrSize = 0;
+    lastCmd8ArrMaxSize = maxLastCmd8ArrSize;
+    if ( maxLastCmd8ArrSize )
+    {
+        lastCmd8Arr = ( uint8_t* )calloc( maxLastCmd8ArrSize, sizeof( uint8_t ) );
+    }
 }
 
+void FakeRead_Destroy()
+{
+    if ( nextRead8Arr )
+    {
+        free( nextRead8Arr );
+        nextRead8Arr = NULL;
+    }
+    if ( lastCmd8Arr )
+    {
+        free( lastCmd8Arr );
+        lastCmd8Arr = NULL;
+    }
+}
 
 void FakeRead_SetNextReading16(uint16_t fakeReading)
 {
@@ -52,10 +79,10 @@ void FakeRead_SetNextReading32VoidParameter( uint32_t fakeReading )
 
 void FakeRead_SetNextReading8Arr( uint8_t* fakeReading, uint16_t size )
 {
-    if ( fakeReading )
+    if ( fakeReading && ( nextRead8ArrMaxSize - nextRead8ArrSize >= size ) )
     {
-        nextRead8Arr = ( uint8_t* )calloc( size, sizeof( uint8_t ) );
-        memcpy( nextRead8Arr, fakeReading, size );
+        memcpy( nextRead8Arr + nextRead8ArrSize, fakeReading, size );
+        nextRead8ArrSize += size;
     }
 }
 
@@ -75,6 +102,12 @@ uint32_t FakeRead_GetLastCmd32()
 uint8_t* FakeRead_GetLastCmd8Arr()
 {
     return lastCmd8Arr;
+}
+
+
+size_t FakeRead_GetLastCmd8ArrSize()
+{
+    return lastCmd8ArrSize;
 }
 
 
@@ -100,11 +133,16 @@ uint32_t FakeRead_Read32VoidParameter()
 
 void FakeRead_Read8Arr( uint8_t* cmd, uint8_t* rxBuff, uint16_t size )
 {
-    if ( cmd && rxBuff && nextRead8Arr )
+    // Store cmd
+    if ( lastCmd8Arr && cmd && ( lastCmd8ArrMaxSize - lastCmd8ArrSize >= size ) )
     {
-        lastCmd8Arr = ( uint8_t* )calloc( size, sizeof( uint8_t ) );
-        memcpy( lastCmd8Arr, cmd, size );
+        memcpy( lastCmd8Arr + lastCmd8ArrSize, cmd, size );
+        lastCmd8ArrSize += size;
+    }
 
+    // Copy over nextRead
+    if ( nextRead8Arr && rxBuff && ( size <= nextRead8ArrSize ) )
+    {
         memcpy( rxBuff, nextRead8Arr, size );
     }
 }

@@ -8,16 +8,31 @@ static uint16_t lastWrite16 = 0;
 static uint32_t lastWrite32 = 0;
 static uint8_t  lastWrite8  = 0;
 
-static uint8_t* lastWriteArr = NULL;
+static uint8_t* lastWrite8Arr = NULL;
+static size_t   lastWrite8ArrMaxSize = 0;
+static size_t   lastWrite8ArrSize = 0;
 
-void WriteSpy_Create()
+void WriteSpy_Create( size_t maxWriteCount8Arr )
 {
     lastWrite16 = 0;
     lastWrite32 = 0;
     lastWrite8  = 0;
-    
-    free( lastWriteArr );
-    lastWriteArr = NULL;
+
+    lastWrite8ArrSize = 0;
+    lastWrite8ArrMaxSize = maxWriteCount8Arr;
+    if ( maxWriteCount8Arr )
+    {
+        lastWrite8Arr = ( uint8_t* )calloc( maxWriteCount8Arr, sizeof( uint8_t ) );
+    }
+}
+
+void WriteSpy_Destroy()
+{
+    if ( lastWrite8Arr )
+    {
+        free( lastWrite8Arr );
+        lastWrite8Arr = NULL;
+    }
 }
 
 uint16_t WriteSpy_GetLastWrite16()
@@ -37,7 +52,12 @@ uint8_t WriteSpy_GetLastWrite8()
 
 uint8_t* WriteSpy_GetLastWrite8Arr()
 {
-    return lastWriteArr;
+    return lastWrite8Arr;
+}
+
+size_t WriteSpy_GetLastWrite8ArrSize()
+{
+    return lastWrite8ArrSize;
 }
 
 void WriteSpy_Write16( uint16_t cmd )
@@ -57,10 +77,10 @@ void WriteSpy_Write8( uint8_t cmd )
 
 void WriteSpy_Write8Arr( uint8_t* cmd , uint16_t size )
 {
-    if ( cmd )
+    if ( cmd && ( lastWrite8ArrMaxSize - lastWrite8ArrSize >= size ) )
     {
-        lastWriteArr = ( uint8_t* )calloc( size, sizeof( uint8_t ) );
-        memcpy( lastWriteArr, cmd, size );
+        memcpy( lastWrite8Arr + lastWrite8ArrSize, cmd, size );
+        lastWrite8ArrSize += size;
     }
 }
 

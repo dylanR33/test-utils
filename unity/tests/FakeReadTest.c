@@ -5,18 +5,19 @@
 
 #include <stdint.h>
 
-#define SIZE 3
+#define SIZE 4
 
 TEST_GROUP( FakeRead );
 
 
 TEST_SETUP( FakeRead )
 {
-    FakeRead_Create();
+    FakeRead_Create( SIZE, SIZE );
 }
 
 TEST_TEAR_DOWN( FakeRead )
 {
+    FakeRead_Destroy();
 }
 
 TEST( FakeRead, Create )
@@ -27,7 +28,7 @@ TEST( FakeRead, Create )
     TEST_ASSERT_EQUAL( 0, FakeRead_GetLastCmd32() );
     TEST_ASSERT_EQUAL( 0, FakeRead_Read32( 0 ) );
 
-    TEST_ASSERT_EQUAL( NULL, FakeRead_GetLastCmd8Arr() );
+    TEST_ASSERT_NOT_NULL( FakeRead_GetLastCmd8Arr() );
 }
 
 
@@ -60,6 +61,6 @@ TEST( FakeRead, GetLastCmd )
     uint8_t rx  [ SIZE ];
     FakeRead_SetNextReading8Arr( fake, SIZE );
     FakeRead_Read8Arr( cmd, rx, SIZE );
-    TEST_ASSERT_EQUAL_UINT8_ARRAY( cmd, FakeRead_GetLastCmd8Arr(), sizeof( cmd ) );
+    TEST_ASSERT_EQUAL_UINT8_ARRAY( cmd, FakeRead_GetLastCmd8Arr(), FakeRead_GetLastCmd8ArrSize() );
 }
 

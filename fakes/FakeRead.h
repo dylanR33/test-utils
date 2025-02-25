@@ -2,8 +2,11 @@
 #define __FAKE_READ_H__
 
 #include <stdint.h>
+#include <stddef.h>
 
-void FakeRead_Create();
+void FakeRead_Create( size_t maxNextRead8ArrSize, size_t maxLastCmd8ArrSize );
+
+void FakeRead_Destroy();
 
 void FakeRead_SetNextReading16( uint16_t fakeReading );
 
@@ -18,6 +21,8 @@ uint16_t FakeRead_GetLastCmd16();
 uint32_t FakeRead_GetLastCmd32();
 
 uint8_t* FakeRead_GetLastCmd8Arr();
+
+size_t FakeRead_GetLastCmd8ArrSize();
 
 uint16_t FakeRead_Read16( uint16_t cmd );
 
