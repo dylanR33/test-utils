@@ -30,7 +30,11 @@ uint32_t FakeRead_Read32( uint32_t cmd );
 
 uint32_t FakeRead_Read32VoidParameter();
 
+// Read from uint8_t array when cmd and rxBuff have same size.
 void FakeRead_Read8Arr( uint8_t* cmd, uint8_t* rxBuff, uint16_t size );
+
+// Read from uint8_t array when cmd and rxBuff have different size.
+void FakeRead_Read8ArrDiffSize( uint8_t* cmd, uint16_t cmdSize, uint8_t* rxBuff, uint16_t rxSize );
 
 #endif
 

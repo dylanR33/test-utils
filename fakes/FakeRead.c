@@ -147,3 +147,19 @@ void FakeRead_Read8Arr( uint8_t* cmd, uint8_t* rxBuff, uint16_t size )
     }
 }
 
+// Same as above but allows for cmd and rxBuff to have different sizes
+void FakeRead_Read8ArrDiffSize( uint8_t* cmd, uint16_t cmdSize, uint8_t* rxBuff, uint16_t rxSize )
+{
+    // Store cmd
+    if ( lastCmd8Arr && cmd && ( lastCmd8ArrMaxSize - lastCmd8ArrSize >= cmdSize ) )
+    {
+        memcpy( lastCmd8Arr + lastCmd8ArrSize, cmd, cmdSize );
+        lastCmd8ArrSize += cmdSize;
+    }
+
+    // Copy over nextRead
+    if ( nextRead8Arr && rxBuff && ( rxSize <= nextRead8ArrSize ) )
+    {
+        memcpy( rxBuff, nextRead8Arr, rxSize );
+    }
+}
